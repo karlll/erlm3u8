@@ -59,7 +59,7 @@ Rules.
 #EXT-X-TARGETDURATION 	: {token,{tag_targetduration,TokenLine,TokenChars}}.
 #EXT-X-MEDIA-SEQUENCE 	: {token,{tag_media_sequence,TokenLine,TokenChars}}.
 #EXT-X-KEY 		: {token,{tag_key,TokenLine,TokenChars}}.
-#EXT-X-PROGRAM-DATE-TIME: {token,{tag_program_date_time,TokenLine,TokenChars}}.
+#EXT-X-PROGRAM-DATE-TIME : {token,{tag_program_date_time,TokenLine,TokenChars}}.
 #EXT-X-ALLOW-CACHE 	: {token,{tag_allow_cache,TokenLine,TokenChars}}.
 #EXT-X-PLAYLIST-TYPE 	: {token,{tag_playlist_type,TokenLine,TokenChars}}.
 #EXT-X-ENDLIST 		: {token,{tag_endlist,TokenLine,TokenChars}}.
