@@ -476,11 +476,7 @@ simple_token_check(StringTokenList,LexerMod) ->
 
 
 simple_pl() ->
-    ["#EXTM3U\n",
-     "#EXT-X-TARGETDURATION:5220\n",
-     "#EXTINF:5220,\n",
-     "http://media.example.com/entire.ts\n",
-     "#EXT-X-ENDLIST\n"].
+    ["#EXTM3U\n#EXT-X-TARGETDURATION:5220\n#EXTINF:5220,\nhttp://media.example.com/entire.ts\n#EXT-X-ENDLIST\n"].
 
 sliding_window_pl() ->
     ["#EXTM3U\n",
