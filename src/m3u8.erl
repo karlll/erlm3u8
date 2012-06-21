@@ -4,6 +4,7 @@
 %%% Based on http://tools.ietf.org/html/draft-pantos-http-live-streaming-08
 %%% @end
 %%%-------------------------------------------------------------------
+
 -module(m3u8).
 
 -export([attribute_list/1]).
@@ -14,6 +15,15 @@
 -export([segment_key/1]).
 -export([segment_subrange/1,segment_subrange/2]).
 -export([program_date_time/0,program_date_time/6, program_date_time/7]).
+-export([allow_cache/1]).
+-export([endlist/0]).
+-export([media/1]).
+-export([i_frame_stream/1]).
+-export([stream/2]).
+-export([i_frames_only/0]).
+-export([disontinutiy/0]).
+-export([version/1]).
+
 
 %% 3.2 Attribute Lists
 
@@ -175,3 +185,112 @@ program_date_time(Format,Args) when is_list(Format),
     DateTimeStr = lists:flatten([io_lib:format(Format, Args)]),
     "#EXT-X-PROGRAM-DATE-TIME:" ++ DateTimeStr.
     
+
+%% 3.4.6.  EXT-X-ALLOW-CACHE
+
+allow_cache(yes) ->
+    "#EXT-X-ALLOW-CACHE:YES";
+
+allow_cache(no) ->
+    "#EXT-X-ALLOW-CACHE:NO".
+
+%% 3.4.8.  EXT-X-ENDLIST
+
+endlist() ->
+    "#EXT-X-ENDLIST".
+
+%% 3.4.9.  EXT-X-MEDIA
+
+media(Attributes) ->
+    media(Attributes,[]).
+
+media([{uri, URI}|T], Acc) ->
+    media(T,[{"URI", quoted_string(URI)}|Acc]);   
+    
+media([type_audio|T], Acc) ->
+    media(T,[{"TYPE", "AUDIO"}|Acc]);
+
+media([type_video|T], Acc) ->
+    media(T,[{"TYPE", "VIDEO"}|Acc]);    
+
+media([{group_id,Id}|T], Acc) ->
+    media(T,[{"GROUP-ID",quoted_string(Id)}|Acc]);
+
+media([{name,Name}|T], Acc) ->
+    media(T,[{"NAME",quoted_string(Name)}|Acc]);
+
+media([{default}|T], Acc) ->
+    media(T,[{"DEFAULT","YES"}|Acc]);
+
+media([{not_default}|T], Acc) ->
+    media(T,[{"DEFAULT","NO"}|Acc]);
+
+media([{autoselect}|T], Acc) ->
+    media(T,[{"AUTOSELECT","YES"}|Acc]);
+
+media([{no_autoselect}|T], Acc) ->
+    media(T,[{"AUTOSELECT","NO"}|Acc]);
+
+media([],Acc) ->
+    "#EXT-X-MEDIA:"++attribute_list(Acc).
+
+%% 3.4.10.  EXT-X-STREAM-INF
+
+stream(Attributes, URI) ->
+    stream(Attributes, URI, []).
+
+stream([{bandwith, BPS}|T], URI, Acc) when is_integer(BPS) ->
+    stream(T,URI,[{"BANDWIDTH",integer_to_list(BPS)}|Acc]);
+
+stream([{program_id,Id}|T], URI, Acc) when is_integer(Id) ->
+    stream(T,URI,[{"PROGRAM-ID",integer_to_list(Id)}|Acc]);
+
+stream([{codecs,Codecs}|T], URI, Acc) ->
+    stream(T,URI,[{"CODECS",quoted_string(Codecs)}|Acc]);
+
+stream([{audio,Audio}|T], URI, Acc) ->
+    stream(T,URI,[{"AUDIO",quoted_string(Audio)}|Acc]);
+
+stream([{video,Video}|T], URI, Acc) ->
+    stream(T,URI,[{"VIDEO",quoted_string(Video)}|Acc]);
+
+stream([],URI,Acc) ->
+    "#EXT-X-STREAM-INF:"++attribute_list(Acc)++"\n"++URI.
+
+%% 3.4.11.  EXT-X-DISCONTINUITY
+
+disontinutiy() ->
+    "#EXT-X-DISCONTINUITY".
+
+%% 3.4.12.  EXT-X-I-FRAMES-ONLY
+
+i_frames_only() ->
+    "#EXT-X-I-FRAMES-ONLY".
+
+%% 3.4.13.  EXT-X-I-FRAME-STREAM-INF
+
+i_frame_stream(Attributes) ->
+    i_frame_stream(Attributes, []).
+
+i_frame_stream([{bandwith, BPS}|T], Acc) when is_integer(BPS) ->
+    i_frame_stream(T,[{"BANDWIDTH",integer_to_list(BPS)}|Acc]);
+
+i_frame_stream([{program_id,Id}|T], Acc) when is_integer(Id) ->
+    i_frame_stream(T,[{"PROGRAM-ID",integer_to_list(Id)}|Acc]);
+
+i_frame_stream([{codecs,Codecs}|T], Acc) ->
+    i_frame_stream(T,[{"CODECS",quoted_string(Codecs)}|Acc]);
+
+i_frame_stream([{uri,URI}|T], Acc) ->
+    i_frame_stream(T,[{"URI",quoted_string(URI)}|Acc]);
+
+i_frame_stream([{video,Video}|T], Acc) ->
+    i_frame_stream(T,[{"VIDEO",quoted_string(Video)}|Acc]);
+
+i_frame_stream([],Acc) ->
+    "#EXT-X-I-FRAME-STREAM-INF:"++attribute_list(Acc)++"\n".
+
+%% 3.4.14. EXT-X-VERSION
+
+version(Version) when is_integer(Version) ->
+    "#EXT-X-VERSION:"++ integer_to_list(Version).
