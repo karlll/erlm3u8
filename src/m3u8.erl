@@ -219,16 +219,16 @@ media([{group_id,Id}|T], Acc) ->
 media([{name,Name}|T], Acc) ->
     media(T,[{"NAME",quoted_string(Name)}|Acc]);
 
-media([{default}|T], Acc) ->
+media([default|T], Acc) ->
     media(T,[{"DEFAULT","YES"}|Acc]);
 
-media([{not_default}|T], Acc) ->
+media([not_default|T], Acc) ->
     media(T,[{"DEFAULT","NO"}|Acc]);
 
-media([{autoselect}|T], Acc) ->
+media([autoselect|T], Acc) ->
     media(T,[{"AUTOSELECT","YES"}|Acc]);
 
-media([{no_autoselect}|T], Acc) ->
+media([no_autoselect|T], Acc) ->
     media(T,[{"AUTOSELECT","NO"}|Acc]);
 
 media([],Acc) ->
@@ -239,7 +239,7 @@ media([],Acc) ->
 stream(Attributes, URI) ->
     stream(Attributes, URI, []).
 
-stream([{bandwith, BPS}|T], URI, Acc) when is_integer(BPS) ->
+stream([{bandwidth, BPS}|T], URI, Acc) when is_integer(BPS) ->
     stream(T,URI,[{"BANDWIDTH",integer_to_list(BPS)}|Acc]);
 
 stream([{program_id,Id}|T], URI, Acc) when is_integer(Id) ->
@@ -272,7 +272,7 @@ i_frames_only() ->
 i_frame_stream(Attributes) ->
     i_frame_stream(Attributes, []).
 
-i_frame_stream([{bandwith, BPS}|T], Acc) when is_integer(BPS) ->
+i_frame_stream([{bandwidth, BPS}|T], Acc) when is_integer(BPS) ->
     i_frame_stream(T,[{"BANDWIDTH",integer_to_list(BPS)}|Acc]);
 
 i_frame_stream([{program_id,Id}|T], Acc) when is_integer(Id) ->
@@ -288,7 +288,7 @@ i_frame_stream([{video,Video}|T], Acc) ->
     i_frame_stream(T,[{"VIDEO",quoted_string(Video)}|Acc]);
 
 i_frame_stream([],Acc) ->
-    "#EXT-X-I-FRAME-STREAM-INF:"++attribute_list(Acc)++"\n".
+    "#EXT-X-I-FRAME-STREAM-INF:"++attribute_list(Acc).
 
 %% 3.4.14. EXT-X-VERSION
 
