@@ -21,7 +21,7 @@
 -export([i_frame_stream/1]).
 -export([stream/2]).
 -export([i_frames_only/0]).
--export([disontinutiy/0]).
+-export([discontinuity/0]).
 -export([version/1]).
 
 
@@ -216,6 +216,9 @@ media([type_video|T], Acc) ->
 media([{group_id,Id}|T], Acc) ->
     media(T,[{"GROUP-ID",quoted_string(Id)}|Acc]);
 
+media([{language,Id}|T], Acc) ->
+    media(T,[{"LANGUAGE",quoted_string(Id)}|Acc]);
+
 media([{name,Name}|T], Acc) ->
     media(T,[{"NAME",quoted_string(Name)}|Acc]);
 
@@ -248,6 +251,9 @@ stream([{program_id,Id}|T], URI, Acc) when is_integer(Id) ->
 stream([{codecs,Codecs}|T], URI, Acc) ->
     stream(T,URI,[{"CODECS",quoted_string(Codecs)}|Acc]);
 
+stream([{resolution,{Width, Height}}|T], URI,  Acc) ->
+    stream(T,URI,[{"RESOLUTION",decimal_resolution(Width,Height)}|Acc]);
+
 stream([{audio,Audio}|T], URI, Acc) ->
     stream(T,URI,[{"AUDIO",quoted_string(Audio)}|Acc]);
 
@@ -259,7 +265,7 @@ stream([],URI,Acc) ->
 
 %% 3.4.11.  EXT-X-DISCONTINUITY
 
-disontinutiy() ->
+discontinuity() ->
     "#EXT-X-DISCONTINUITY".
 
 %% 3.4.12.  EXT-X-I-FRAMES-ONLY
@@ -281,6 +287,9 @@ i_frame_stream([{program_id,Id}|T], Acc) when is_integer(Id) ->
 i_frame_stream([{codecs,Codecs}|T], Acc) ->
     i_frame_stream(T,[{"CODECS",quoted_string(Codecs)}|Acc]);
 
+i_frame_stream([{resolution,{Width, Height}}|T], Acc) ->
+    i_frame_stream(T,[{"RESOLUTION",decimal_resolution(Width,Height)}|Acc]);
+
 i_frame_stream([{uri,URI}|T], Acc) ->
     i_frame_stream(T,[{"URI",quoted_string(URI)}|Acc]);
 
@@ -294,3 +303,7 @@ i_frame_stream([],Acc) ->
 
 version(Version) when is_integer(Version) ->
     "#EXT-X-VERSION:"++ integer_to_list(Version).
+
+
+
+
