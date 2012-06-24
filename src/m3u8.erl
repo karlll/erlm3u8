@@ -16,6 +16,7 @@
 -export([segment_subrange/1,segment_subrange/2]).
 -export([program_date_time/0,program_date_time/6, program_date_time/7]).
 -export([allow_cache/1]).
+-export([playlist_type/1]).
 -export([endlist/0]).
 -export([media/1]).
 -export([i_frame_stream/1]).
@@ -193,6 +194,15 @@ allow_cache(yes) ->
 
 allow_cache(no) ->
     "#EXT-X-ALLOW-CACHE:NO".
+
+%% 3.4.7.  EXT-X-PLAYLIST-TYPE
+
+playlist_type(event) ->
+    "#EXT-X-PLAYLIST-TYPE:EVENT";
+
+playlist_type(vod) ->
+    "#EXT-X-PLAYLIST-TYPE:VOD".
+
 
 %% 3.4.8.  EXT-X-ENDLIST
 

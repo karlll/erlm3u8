@@ -65,8 +65,6 @@ Rules.
 #EXT-X-ENDLIST 		: {token,{tag_endlist,TokenLine,TokenChars}}.
 #EXT-X-MEDIA 		: {token,{tag_media,TokenLine,TokenChars}}.
 #EXT-X-STREAM-INF 	: {token,{tag_steam_inf,TokenLine,TokenChars}}.
-%% #EXT-X-STREAM-INF 	: put(uri,expected),
-%%			  {token,{tag_steam_inf,TokenLine,TokenChars}}.
 #EXT-X-DISCONTINUITY 	: {token,{tag_discontinuity,TokenLine,TokenChars}}.
 #EXT-X-I-FRAMES-ONLY 	: {token,{tag_i_frames_only,TokenLine,TokenChars}}.
 #EXT-X-I-FRAME-STREAM-INF : {token,{tag_i_frames_stream_inf,TokenLine,TokenChars}}.
@@ -90,22 +88,8 @@ VIDEO 			: {token,{e_media_type_video,TokenLine,TokenChars}}.
 
 %% uri
 {L}({L}|{D}|\+|-|\.|)*\:.+ : {token,{uri,TokenLine,TokenChars}}.
-%\n[^#][^\n]+(\n)? : {token,{uri,TokenLine,TokenChars}}.
-
-%%\n : case get(uri) of
-%%     	  undefined -> skip_token;
-%%	  expected -> put(uri,undefined),
-%%	  	      {skip_token,"***"}
-%%  end.
-
 
 \n : skip_token.
 \n\r : skip_token.
 
 Erlang code.
-
-
-test1() ->
- "#EXT-X-STREAM-INF:BANDWIDTH=1280000\nhttp://example.com/low/audio-video.m3u8\n".
-test2() ->
- "#EXT-X-STREAM-INF:BANDWIDTH=1280000\nlow/audio-video.m3u8\n".

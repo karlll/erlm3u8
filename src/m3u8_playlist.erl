@@ -72,6 +72,10 @@ generate([I = #endlist{} | T], Acc) ->
 generate([I = #cache{} | T], Acc) ->
     generate(T, [ [m3u8:allow_cache(I#cache.allow), ?EOL] | Acc ]);
 
+generate([I = #playlist_type{} | T], Acc) ->
+    generate(T, [ [m3u8:playlist_type(I#playlist_type.type), ?EOL] | Acc ]);
+
+
 generate([I = #segment_key{} | T], Acc) ->
     generate(T, [ [m3u8:segment_key(segment_key_attrs(I)), ?EOL] | Acc ]);
 
@@ -177,74 +181,3 @@ kv (Name,undefined) ->
 kv (Name,Value) ->
     {Name,Value}.
 
-
-test() ->
-
-    Header = [ #header{} ],
-    eq(generate(Header),"#EXTM3U\n"),
-
-    SegmentDuration = [ #segment_duration{duration=1000,title="Hello test"} ],
-    eq(generate(SegmentDuration),"#EXTINF:1000,\"Hello test\"\n"),
-
-    IFrameStream = [ #i_frame_stream{uri="http://foo",bandwidth=1234,program_id=23,codecs="mp4v.20.9, mp4a.E1"} ],
-    eq(generate(IFrameStream),"#EXT-X-I-FRAME-STREAM-INF:URI=\"http://foo\",BANDWIDTH=1234,PROGRAM-ID=23,CODECS=\"mp4v.20.9, mp4a.E1\"\n"),
-
-    Stream = [ #stream{uri="http://foo",bandwidth=1234,program_id=23,codecs="mp4v.20.9, mp4a.E1",audio="id1",video="id2"} ],
-    eq(generate(Stream),"#EXT-X-STREAM-INF:BANDWIDTH=1234,PROGRAM-ID=23,CODECS=\"mp4v.20.9, mp4a.E1\",AUDIO=\"id1\",VIDEO=\"id2\"\nhttp://foo\n"),
-
-    Media = [ #media{uri="http://foo2",type=audio,group_id="foo",language="English",autoselect=yes} ],
-    eq(generate(Media),"#EXT-X-MEDIA:URI=\"http://foo2\",TYPE=AUDIO,GROUP-ID=\"foo\",AUTOSELECT=YES\n"),
-
-    ProgramDateTime1 = [ #program_date_time{year=2012, month = 10, day = 12, 
-					    hour = 11, minute = 22, second = 55,
-					    utc=true} ],
-    eq(generate(ProgramDateTime1),"#EXT-X-PROGRAM-DATE-TIME:2012-10-12T11:22:55Z\n"),
-
-    ProgramDateTime2 = [ #program_date_time{year=2012, month = 5, day = 3, 
-					    hour = 11, minute = 2, second = 55,
-					    offset_sign = '-', offset_hour = 2} ],
-    eq(generate(ProgramDateTime2),"#EXT-X-PROGRAM-DATE-TIME:2012-05-03T11:02:55-02\n"),
-
-    ProgramDateTime3 = [ #program_date_time{year=2012, month = 5, day = 3, 
-					    hour = 1, minute = 2, second = 5,
-					    offset_sign = '+', offset_hour = 2, offset_minute=30} ],
-    eq(generate(ProgramDateTime3),"#EXT-X-PROGRAM-DATE-TIME:2012-05-03T01:02:05+0230\n"),
-
-    Discont  = [ #discontinuity{} ],
-    eq(generate(Discont),"#EXT-X-DISCONTINUITY\n"),
-
-    IFramesOnly = [ #i_frames_only{} ],
-    eq(generate(IFramesOnly),"#EXT-X-I-FRAMES-ONLY\n"),
-
-    Version = [ #version{version=4}],
-    eq(generate(Version),"#EXT-X-VERSION:4\n"),
-
-    Endlist = [ #endlist{}],
-    eq(generate(Endlist),"#EXT-X-ENDLIST\n"),
-
-    Cache = [ #cache{allow=yes}],
-    eq(generate(Cache),"#EXT-X-ALLOW-CACHE:YES\n"),
-
-    SegmentKey = [#segment_key{uri="http://key",method=aes128}],
-    eq(generate(SegmentKey),"#EXT-X-KEY:URI=\"http://key\",METHOD=AES-128\n"),
-
-    MediaSeq = [#media_sequence{number=128}],
-    eq(generate(MediaSeq),"#EXT-X-MEDIA-SEQUENCE:128\n"),
-
-    MaxSegmentDuration = [#max_segment_duration{seconds=20}],
-    eq(generate(MaxSegmentDuration),"#EXT-X-TARGETDURATION:20\n"),
-
-    SegmentSubrange = [#segment_subrange{length=98,offset=1030}],
-    eq(generate(SegmentSubrange),"#EXT-X-BYTERANGE:98@1030\n"),
-
-    ok.
-
-
-eq(Str1,Str2) ->
-    case string:equal(Str1,Str2) of
-	true -> io:format("~p = ~p~n",[Str1,Str2]),
-		ok;
-	_ -> io:format("~p != ~p~n",[Str1,Str2]),
-	     io:format("Strings doesnt match"),
-	     exit(fail)
-    end.
