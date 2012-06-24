@@ -10,7 +10,7 @@
 -compile(export_all).
 
 -include_lib("common_test/include/ct.hrl").
--include("../inc/m3u8.hrl").
+-include("../include/m3u8.hrl").
 
 %%--------------------------------------------------------------------
 %% @spec suite() -> Info

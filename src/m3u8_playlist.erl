@@ -9,7 +9,7 @@
 
 -export([generate/1]).
 
--include("inc/m3u8.hrl").
+-include("include/m3u8.hrl").
 
 -define(EOL,"\n").
 
